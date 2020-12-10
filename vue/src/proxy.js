@@ -1,5 +1,7 @@
 function trigger(target){
-  console.log(target,'触发试图更新')
+  setTimeout(()=>{
+    console.log(target,'触发试图更新')
+  })
 }
 function isObject(x){
   return typeof x === 'object' && x !== null
@@ -38,9 +40,12 @@ let obj = {
   age:26
 }
 let obj_= reactive(obj)
-obj_.name = 'zyd1'
+// obj_.name = 'zyd1'
 //数组
 let arr = new Array(5).fill().map((item,i)=>i)
 let arr_ =  reactive(arr)
 arr_.push(5)
+// arr_[1] = 100
+// arr_[100] = 100
+// arr_.length = 0
 

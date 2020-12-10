@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ref</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    因为在JavaScript中，原始类型（例如Number或）String是通过值而不是通过引用传递的
+    <img src="https://blog.penjee.com/wp-content/uploads/2015/02/pass-by-reference-vs-pass-by-value-animation.gif" alt="">
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+      const {reactive,ref} = Vue
+      const Counter = {
+        setup(){
+          //ref实现响应式，适合单个值场景
+          const count = ref(0)
+          const add =()=>{
+            count.value ++ //需要.value
+          }
+          console.log(count)
+          watch(count,()=>{//不需要.value
+            //do something
+          })
+          return {
+            count,//不需要.value
+            add
+          }
+        },
+        template:`<h1>{{count}}</h1><button @click="add">+</button>`,
+      };
+      const app = Vue.createApp(Counter).mount("#app");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>reactive</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+      const { reactive, ref, toRef } = Vue;
+      const Counter = {
+        setup() {
+          //reactive实现响应式，适用于一组值
+          const state = reactive({
+            count: 0,
+          });
+          const add = () => {
+            state.count++;
+          };
+          //返回一个代理后的对象，用来实现响应式
+          console.log(state);
+          return {
+            state,
+            add,
+          };
+        },
+        template: `<h1>{{state.count}}</h1><button @click="add">+</button>`,
+      };
+      const app = Vue.createApp(Counter).mount("#app");
+    </script>
+  </body>
+</html>

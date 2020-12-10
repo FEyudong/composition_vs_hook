@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lifeCycle</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+      const {onMounted,onUnmounted} = Vue
+      const Counter = {
+        setup(){
+          onMounted(()=>{
+            alert('组件挂载')
+          })
+          onUnmounted(()=>{
+            alert('组件卸载')
+          })
+        },
+        template:`<h1>生命周期</h1>`,
+      };
+      const app = Vue.createApp(Counter).mount("#app");
+    </script>
+  </body>
+</html>

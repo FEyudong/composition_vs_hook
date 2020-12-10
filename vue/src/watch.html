@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>watch</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+      const {reactive,computed,watch} = Vue
+      const Counter = {
+        setup(){
+          //reactive实现响应式，适用于一组值
+          const state = reactive({
+            count:0
+          })
+          //计算count是否是奇数，字体切换红绿颜色
+          let isOdd = computed(()=>state.count%2 === 0)
+          
+          watch(isOdd,(newValue)=>{
+            alert(newValue?'偶数':"奇数")
+          })
+          const add =()=>{
+            state.count ++
+          }
+          return {
+            state,
+            isOdd,
+            add
+          }
+        },
+        template:`<h1 :style="{'color':isOdd?'red':'green'}">{{state.count}}</h1><button @click="add">+</button>`,
+      };
+      const app = Vue.createApp(Counter).mount("#app");
+    </script>
+  </body>
+</html>

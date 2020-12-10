@@ -13,7 +13,6 @@
     <div v-if="!hasMore && !isFetching" class="no-more">暂无更多</div>
   </div>
 </div>
-
 </template>
 <script>
 import Loading from './components/Loading.vue'
