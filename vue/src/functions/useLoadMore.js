@@ -45,7 +45,7 @@ export default (scrollTop,loadFn) => {
       pageStates.isFetching = false
     },
     {
-      // immediate:true //不好使，文档里没有说明，可能是个bug
+      // immediate:true //立即执行参数不好使，文档里没有说明，可能是个bug
     }
   );
   return {

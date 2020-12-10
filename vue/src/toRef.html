@@ -15,7 +15,8 @@
           x:0,
           y:0
         })
-        const posRefsObj = useRefs(pos)
+        // let x = ref(0)
+        // let y = ref(0)
         const onChange = (e)=>{
           pos.x = e.pageX
           pos.y = e.pageY
@@ -27,28 +28,24 @@
           window.removeEventListener('mousemove',onChange)
         })
         //下边的解构会让proxy失效，响应式丢失 
-         return pos
-        // 方法1 toRef
+        //  return pos
+        // 方法1 toRef 将响应式对象的某个属性值转化为ref对象
         // return {
         //   x:toRef(pos,'x'),
-        //   y:toRed(pos,'y')
+        //   y:toRef(pos,'y')
         // }
         // 方法2 toRefs
-        // return {
-        //   ...toRefs(pos)
-        // }
+        // return toRefs(pos)
         // 方法3 一开始就用ref声明单个 
-        //let x = ref(0)
-        //let y = ref(0)
-        // return {
-        //   x,
-        //   y
-        // }
+        return {
+          x,
+          y
+        }
       }
-      const Counter = {
+      const MouseXy = {
         setup(){
           const state = reactive({
-            title:'ref'
+            title:'演示'
           })
           const {x,y} = useMousePositon()
           return {
@@ -59,7 +56,7 @@
         },
         template:`{{state.title}}<h1>x: {{x}}</h1><h1>y: {{y}}</h1>`,
       };
-      const app = Vue.createApp(Counter).mount("#app");
+      const app = Vue.createApp(MouseXy).mount("#app");
     </script>
   </body>
 </html>

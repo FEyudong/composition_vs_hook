@@ -12,11 +12,11 @@
       const {reactive,computed} = Vue
       const Counter = {
         setup(){
-          //reactive实现响应式，适用于一组值
+          //reactive实现响应式
           const state = reactive({
             count:0
           })
-          //计算count是否是偶数，字体切换红绿颜色
+          //计算count是否是偶数，切换颜色，偶数为红，奇数为绿
           let isOdd = computed(()=>state.count%2 === 0)
           console.log(isOdd)
           const add =()=>{

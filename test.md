@@ -4,7 +4,7 @@
 
 - ### 动机
 
-1. 由于 ES5 Object.definedProperty 的限制，Vue 不能检测数组和对象的一些特殊变化。
+1. 由于 ES5 Object.defineProperty 的限制，Vue 不能检测数组和对象的一些特殊变化。
 
 ```
 vue 2.x
@@ -20,7 +20,7 @@ const vm = new Vue({
 // vm.a 是响应式的
 
 vm.b = 2
-// vm.b 是非响应式的
+// vm.b 新增属性是非响应式的
 
 // 对于Array类型
 
@@ -53,14 +53,14 @@ Demo ==> Proxy
    Options 与 Class Api，代码组织不够聚合，无法按功能去进行代码组织，导致代码散落在 data、生命周期、watch、computed 里。
 2. 逻辑拆分与复用
    ![功能拆分](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4146605abc9c4b638863e9a3f2f1b001~tplv-k3u1fbpfcp-watermark.image)
-   vue2.x 包含模版的代码复用方式可以通过提取组件解决；纯的计算方法，可以提取为公共方法；但有些不需要模版的公共逻辑（可能包含状态、事件、生命周期等），就很难抽取，之前的 mixin、高阶组件等方案也都有他们各自带来的弊端。  
-   vue3.x 全新的 composition-Api，可以完美解决这个问题，用负责单一功能函数进行组合。
+   vue2.x 代码复用的主要方式是提取可复用组件；纯的计算方法，可以提取为公共方法；但有些不需要模版的公共逻辑（并且与状态、事件、生命周期等紧密关联），就很难抽取，之前的 mixin、高阶组件等方案也都有他们各自带来的弊端。  
+  vue3.x 全新的 composition-API，可以完美解决这些问题，思路与react-hook类似，用负责单一功能函数进行组合。
 
 - ## 用法
 
   ### setup
 
-  - setup 是新组件选项，(它充当在组件内部使用 Composition API 的入口点。)
+  - setup 是一个新的组件选项，(它充当在组件内部使用 Composition API 的入口点。)
     ```
       // book.vue
       export default {
@@ -72,11 +72,11 @@ Demo ==> Proxy
           }
       }
     ```
-  - 调用时间
+  - 调用时机
 
-    严格意义不属于生命周期的范围，调用在 beforeCreate 之前，全局只调用一次。
+    在 beforeCreate 之前，全局只调用一次。
 
-  - 模板使用
+  - 使用
 
     ```
       <template>
@@ -102,12 +102,12 @@ Demo ==> Proxy
     ```
 
   - setup 函数里 this 并不是期望的组件实例，为 undefined，所以不要在 setup 访问 this，尽管这也毫无意义。
-
+     
   ### reactive
 
   作用：用于实现对象数据类型的响应式侦测
 
-  用法： 传入一个对象，返回值是一个经过 vue 代理过的响应式对象
+  用法： 传入一个普通对象，返回值是一个经过 vue 代理过的响应式对象
 
   ```
     const Counter = {
@@ -253,32 +253,37 @@ Demo ==> Proxy
  ### 与react-hook对比 ### 
  1. 心智负担不同  
  两者都会有一定的心智负担   
- **react-hook** 的问题担心频繁触发更新渲染，useEffect可以说是控制代码不被频繁执行最后的逃生舱，但是依赖项数组如果设置不正确，会导致副作用执行时机不正确，还可能会导致闭包旧值的bug; useCallBack经常总是需要，避免触发不必要的子组件渲染。
- **vue-compositonApi**的问题刚好相反，是经常担心触发不了更新，比如解构导致的响应式丢失，vue引入ref解决这个问题，，但引起了总是忘记写.value的新问题。
+ **react-hook** 的问题是总担心频繁触发更新，useEffect可以说是控制代码不被频繁执行最后的逃生舱，但是依赖项数组如果设置不正确，会导致副作用执行时机不正确，还可能会导致取到闭包旧值的bug; useCallBack经常需要使用，用来避免触发不必要的子组件渲染。
+ **vue-compositonApi**的问题刚好相反，是经常担心触发不了更新，比如解构导致的响应式丢失，vue引入ref解决这个问题，但引起了总是忘记写.value的新问题。
 2. 对生命周期的看法不一样  
- **react-hook** 有意弱化生命周期的概念，转而倡导渲染副作用的概念，由数据变化引起渲染副作用的执行。另一个角度说react用useEffect实现了生命周期的聚合与封装。
+ **react-hook** 有意弱化生命周期的概念，转而倡导渲染引起副作用的概念，由数据变化引起渲染副作用的执行。或者另一个角度说react用useEffect实现了生命周期的聚合与封装。
  ```
-  let [top,setTop] = useState(0)
-  const onChange = (e) => {
-    const st = document.body.scrollTop|| document.documentElement.scrollTop;
-    setTop(st || 0)
-  };
-  //组件挂载，绑定副作用
+ //hook
   useEffect(() => {
-    target.addEventListener("scroll", onChange);
+   alert('组件挂载')
     return ()=>{
       //组件卸载，清除副作用
-      target.removeEventListener("scroll", onChange);
+      alert('组件卸载')
     }
-  },[]); 
+  },[]);
+
+  //compositonApi
+  onMounted(()=>{
+    alert('组件挂载')
+  })
+  onUnmounted(()=>{
+    alert('组件卸载')
+  })  
  ``` 
- **vue-compositonApi** 还是熟悉的vue2.x生命周期，没有新的理解成本
-## 三、 其他
+ **vue-compositonApi** 还是熟悉的vue2.x生命周期，没有增加新的理解成本
+
+ compositionAPI实践Demo（并与hook的对比）。
+## 三、 其他改动
 
 - teleport （传送）
 - 组件不再限制只能存在一个根元素 
 - data选项，都统一改成函数形式（之前根组件是对象，子组件是函数）
-等等
 - $children已废弃，只能通过ref获取组件及dom了。
+- 等等。更多的请参照[官方文档](https://v3.vuejs.org/guide/installation.html#release-notes)
 
 
