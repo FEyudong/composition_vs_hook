@@ -44,7 +44,7 @@ let obj_= reactive(obj)
 let arr = new Array(5).fill().map((item,i)=>i)
 let arr_ =  reactive(arr)
 // arr_.push(5)
-// arr_[1] = 100
-// arr_[100] = 100
+arr_[1] = 100
+arr_[100] = 100
 // arr_.length = 0
 

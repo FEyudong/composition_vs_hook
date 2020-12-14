@@ -9,7 +9,7 @@
     <div id="app"></div>
     <script src="https://unpkg.com/vue@next"></script>
     <script>
-      const {reactive,toRef,toRefs,onMounted,onUnmounted} = Vue
+      const {reactive,ref,toRef,toRefs,onMounted,onUnmounted} = Vue
       function useMousePositon(){
         const pos = reactive({
           x:0,
@@ -20,6 +20,8 @@
         const onChange = (e)=>{
           pos.x = e.pageX
           pos.y = e.pageY
+          // x.value = e.pageX
+          // y.value = e.pageY
         }
         onMounted(()=>{
           window.addEventListener('mousemove',onChange)
@@ -28,8 +30,9 @@
           window.removeEventListener('mousemove',onChange)
         })
         //下边的解构会让proxy失效，响应式丢失 
-        //  return pos
+         return pos
         // 方法1 toRef 将响应式对象的某个属性值转化为ref对象
+        // console.log(toRef(pos,'x'))
         // return {
         //   x:toRef(pos,'x'),
         //   y:toRef(pos,'y')
@@ -37,24 +40,24 @@
         // 方法2 toRefs
         // return toRefs(pos)
         // 方法3 一开始就用ref声明单个 
-        return {
-          x,
-          y
-        }
+        // return {
+        //   x,
+        //   y
+        // }
       }
       const MouseXy = {
         setup(){
           const state = reactive({
             title:'演示'
           })
-          const {x,y} = useMousePositon()
+          const pos = useMousePositon()
+
           return {
             state,
-            x,
-            y
+            pos
           }
         },
-        template:`{{state.title}}<h1>x: {{x}}</h1><h1>y: {{y}}</h1>`,
+        template:`{{state.title}}<h1>x: {{pos.x}}</h1><h1>y: {{pos.y}}</h1>`,
       };
       const app = Vue.createApp(MouseXy).mount("#app");
     </script>

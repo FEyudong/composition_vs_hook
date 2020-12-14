@@ -131,14 +131,24 @@ Demo ==> Proxy
   ```
 
   ### ref
-  作用：用于实现任何值包括基础值（例：String、Number）的响应式侦测
+  作用：用于实现基础数据类型值（例：String、Number）的响应式侦测
 
-  用法：传入一个值，返回一个 vue 内部包装过的{value:xxx}响应式引用对象，并且改变 value 属性可以触发响应式更新,用于模版渲染时，不用.value 这样去访问,vue 内部会自动拆包。
+  用法：传入一个值，返回一个 vue 内部包装过的{value:xxx}对象，并且改变 value 属性可以触发响应式更新,用于模版渲染时，不用.value 这样去访问,vue 内部会自动拆包。
 
   为什么这样设计？  
-  1. vue用的响应式侦测手段（defineProperty或者Proxy）无法针对一个普通值进行观测，只能通过一个对象间接的用代理或者属性劫持的方式去实现监测。
-  2. 因为在JavaScript中，原始类型（例如Number或）String是通过值而不是通过引用传递的。
+    因为在JavaScript中，原始类型（例如Number或String）是通过值传递的，而非引用。
     ![按值还是按引用传递的差别](https://blog.penjee.com/wp-content/uploads/2015/02/pass-by-reference-vs-pass-by-value-animation.gif)
+    ```
+    //基础类型
+    let a = 1
+    let b = a// a变量与b变量已没有关系，实现不了响应式
+    //对象类型
+    let a = {value:1}
+    let b = a// a变量与b变量都在引用同一个对象，响应式就不会中断
+    //ref就是vue内部帮你实现的将普通值转化为一个包装对象的工具。
+    let a = ref(1)
+    console.log(a) //{value:1} 值转为对象
+    ```
   
   ```
     const Counter = {
@@ -161,7 +171,7 @@ Demo ==> Proxy
   问题有多严重？：[前端人因为 Vue3 的 Ref-sugar 提案打起来了！](https://www.bilibili.com/read/cv8414218)  
   .value到底什么时候需要  
   (1) 如果自己的代码取值，需要  
-  (2) watch等的api上，不需要（vue自动帮你做了拆包）  
+  (2) watch等的vue自身提供的api上，不需要（vue自动帮你做了拆包）  
   (3) 模版取值不需要  
   影响：造成开发体验上的割裂
   避免：并将所有的ref统一命名比如：xxxRef一定程度可以避免，或者使用ref:语法糖。
@@ -174,8 +184,8 @@ Demo ==> Proxy
           y:0
         })
         //将响应式对象某一个属性转化为ref
-        const xRef = useRef(pos,'x')
-        const yRef = useRef(pos,'y')
+        const xRef = toRef(pos,'x')
+        const yRef = toRef(pos,'y')
     ```
   toRefs方法
   ```
@@ -187,8 +197,8 @@ Demo ==> Proxy
         const posRefsObj = useRefs(pos)
         //等价于
         const posRefsObj = {
-            x:useRef(pos,'x')
-            y:useRef(pos,'y')
+            x:toRef(pos,'x')
+            y:toRef(pos,'y')
         }
   ```  
   Demo演示这两个的作用
@@ -256,7 +266,7 @@ Demo ==> Proxy
  **react-hook** 的问题是总担心频繁触发更新，useEffect可以说是控制代码不被频繁执行最后的逃生舱，但是依赖项数组如果设置不正确，会导致副作用执行时机不正确，还可能会导致取到闭包旧值的bug; useCallBack经常需要使用，用来避免触发不必要的子组件渲染。
  **vue-compositonApi**的问题刚好相反，是经常担心触发不了更新，比如解构导致的响应式丢失，vue引入ref解决这个问题，但引起了总是忘记写.value的新问题。
 2. 对生命周期的看法不一样  
- **react-hook** 有意弱化生命周期的概念，转而倡导渲染引起副作用的概念，由数据变化引起渲染副作用的执行。或者另一个角度说react用useEffect实现了生命周期的聚合与封装。
+ **react-hook** 有意弱化生命周期的概念，转而倡导渲染副作用的概念，由数据变化引起渲染副作用的执行。或者另一个角度说react用useEffect实现了生命周期的聚合与封装。
  ```
  //hook
   useEffect(() => {
